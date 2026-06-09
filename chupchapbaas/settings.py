@@ -9,9 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-insecure-key-change-in-production')
 
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['whisprapp.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -101,7 +101,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = f'ChupChapBaas <{os.environ.get("EMAIL_HOST_USER", "")}>'
+DEFAULT_FROM_EMAIL = f'Whispr <{os.environ.get("EMAIL_HOST_USER", "")}>'
 EMAIL_TIMEOUT = 10
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
