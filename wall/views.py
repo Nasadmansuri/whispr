@@ -222,7 +222,7 @@ def register(request):
                 uid_str = uid if isinstance(uid, str) else uid.decode()
                 token_str = token_encoded if isinstance(token_encoded, str) else token_encoded.decode()
                 token_str = token_str.rstrip('=')
-                verify_url = f"http://127.0.0.1:8000/verify-email/{uid_str}/{token_str}/"
+                verify_url = f"https://whisprapp.pythonanywhere.com/verify-email/{uid_str}/{token_str}/"
                 print(f"\n\nVERIFY URL: {verify_url}\n\n")
                 send_mail(
                     subject='Verify your ChupChapBaas email',
