@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+
+<div class="mb-6">
+<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">📈 Trending Now</h2>
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Most engaging whispers in the last 48 hours</p>
+</div>
+
+{% for confession in confessions %}
+<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 mb-4 shadow-sm hover:shadow-md transition">
+
+{% if confession.board %}
+<a href="/b/{{ confession.board.name }}/" class="inline-block bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 text-xs font-bold px-2 py-0.5 rounded-full mb-2 hover:bg-rose-100 transition">b/{{ confession.board.name }}</a>
+{% endif %}
+
+<a href="/confession/{{ confession.id }}/" class="block text-gray-800 dark:text-gray-100 text-base leading-relaxed mb-3 hover:text-rose-600 dark:hover:text-rose-400 transition">{{ confession.message }}</a>
+
+{% if confession.image %}
+<a href="/confession/{{ confession.id }}/">
+<img src="{{ confession.image.url }}" alt="confession image" class="w-full max-h-64 object-cover rounded-xl mb-3 border border-gray-100 dark:border-gray-800">
+</a>
+{% endif %}
+
+<div class="flex items-center justify-between flex-wrap gap-2">
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-semibold border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">👍 {{ confession.upvote_count }}</span>
+<span class="flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-semibold border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">💬 {{ confession.comments.count }}</span>
+<span class="text-xs text-rose-500 font-semibold ml-1">📈 {{ confession.upvote_count|add:confession.comments.count }} CP</span>
+</div>
+<div class="flex items-center gap-2 flex-wrap">
+{% if confession.is_anonymous %}
+<span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full text-xs font-medium">🫧 Anonymous</span>
+{% else %}
+<a href="/profile/{{ confession.author.username }}/" class="bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-300 px-2 py-0.5 rounded-full text-xs font-medium hover:bg-rose-100 transition">👤 {{ confession.author.username }}</a>
+{% endif %}
+<span class="bg-yellow-50 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 px-2 py-0.5 rounded-full text-xs font-medium">{{ confession.get_mood_display }}</span>
+<span class="text-gray-400 dark:text-gray-500 text-xs">{{ confession.posted_at|date:'M d, Y' }}</span>
+</div>
+</div>
+</div>
+{% empty %}
+<div class="text-center py-16 text-gray-400 dark:text-gray-600">
+<p class="text-4xl mb-3">📈</p>
+<p class="text-lg font-medium">Nothing trending yet</p>
+<p class="text-sm">Be the first to post something worth talking about!</p>
+</div>
+{% endfor %}
+
+</div>
+{% endblock %}

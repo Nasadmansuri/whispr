@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="max-w-lg mx-auto">
+<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-sm">
+
+<div class="mb-6">
+<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Create Account 🫧</h2>
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Join the anonymous whisper wall</p>
+</div>
+
+<form method="post" class="space-y-4">
+{% csrf_token %}
+{% for field in form %}
+<div>
+<label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ field.label }}</label>
+<input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" {% if field.value %}value="{{ field.value }}"{% endif %} class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-500 transition">
+{% if field.errors %}
+<p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>
+{% endif %}
+{% if field.help_text %}
+<p class="text-gray-400 text-xs mt-1">{{ field.help_text }}</p>
+{% endif %}
+</div>
+{% endfor %}
+
+<div>
+<label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Email <span class="font-normal text-gray-400">(for verification)</span></label>
+<input type="email" name="email" placeholder="your@email.com" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-500 transition">
+<p class="text-gray-400 text-xs mt-1">Optional — used to verify your account</p>
+</div>
+
+<button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3 rounded-xl transition text-base mt-2">Create Account</button>
+</form>
+
+<p class="text-sm text-center text-gray-500 dark:text-gray-400 mt-6">Already have an account? <a href="/accounts/login/" class="text-rose-600 dark:text-rose-400 font-semibold hover:underline">Login</a></p>
+
+</div>
+</div>
+
+{% endblock %}

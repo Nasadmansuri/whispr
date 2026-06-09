@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="max-w-lg mx-auto">
+<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-sm">
+
+<div class="mb-6">
+<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Post a Whisper 🫧</h2>
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Your secret is safe with us</p>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="space-y-5" id="confession-form">
+{% csrf_token %}
+
+<div>
+<label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Whisper</label>
+<textarea name="message" rows="4" placeholder="Say something anonymously..." required class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-500 transition resize-none"></textarea>
+</div>
+
+<div>
+<label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Post to Board <span class="font-normal text-gray-400">(optional)</span></label>
+<select name="board" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-rose-500 transition">
+<option value="">🌐 General Wall (no board)</option>
+{% for board in form.board.field.queryset %}
+<option value="{{ board.id }}">b/{{ board.name }}</option>
+{% endfor %}
+</select>
+</div>
+
+<div>
+<label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Mood</label>
+<select name="mood" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-rose-500 transition">
+<option value="happy">😊 Happy</option>
+<option value="sad">😢 Sad</option>
+<option value="angry">😠 Angry</option>
+</select>
+</div>
+
+<div>
+<label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">📎 Attach Media <span class="font-normal text-gray-400">(image or video, not both)</span></label>
+
+<div class="flex gap-2 mb-3">
+<button type="button" onclick="showTab('image-tab', 'video-tab', this)" id="image-tab-btn" class="flex-1 py-2 rounded-xl text-sm font-semibold border-2 border-rose-300 bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 transition">🖼️ Image</button>
+<button type="button" onclick="showTab('video-tab', 'image-tab', this)" id="video-tab-btn" class="flex-1 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 transition">🎥 Video</button>
+</div>
+
+<div id="image-tab">
+<div class="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl p-6 text-center hover:border-rose-300 transition">
+<input type="file" name="image" id="image-upload" accept="image/jpeg,image/png,image/gif,image/webp" class="hidden" onchange="handleImageSelect(event)">
+<label for="image-upload" class="cursor-pointer">
+<p class="text-3xl mb-2">🖼️</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Click to upload an image</p>
+<p class="text-xs text-gray-400 dark:text-gray-500 mt-1">JPG, PNG, GIF, WebP — max 5MB</p>
+</label>
+<img id="image-preview" src="" alt="preview" class="hidden mt-4 mx-auto max-h-48 rounded-xl object-cover">
+<p id="image-file-name" class="hidden text-xs text-gray-500 dark:text-gray-400 mt-2"></p>
+<button type="button" id="remove-image" onclick="removeImage()" class="hidden mt-2 text-xs text-red-400 hover:text-red-600 transition">✕ Remove image</button>
+</div>
+<p id="size-error" class="hidden text-red-500 text-xs mt-2 font-medium">⚠️ File too large. Max 5MB.</p>
+<p id="type-error" class="hidden text-red-500 text-xs mt-2 font-medium">⚠️ Invalid type. Use JPG, PNG, GIF, or WebP.</p>
+</div>
+
+<div id="video-tab" class="hidden">
+<div class="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl p-6 text-center hover:border-rose-300 transition">
+<input type="file" name="video" id="video-upload" accept="video/mp4,video/webm,video/ogg,video/quicktime" class="hidden" onchange="handleVideoSelect(event)">
+<label for="video-upload" class="cursor-pointer">
+<p class="text-3xl mb-2">🎥</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Click to upload a video</p>
+<p class="text-xs text-gray-400 dark:text-gray-500 mt-1">MP4, WebM, OGG, MOV — max 10MB</p>
+</label>
+<video id="video-preview" class="hidden mt-4 mx-auto max-h-48 rounded-xl w-full" controls></video>
+<p id="video-file-name" class="hidden text-xs text-gray-500 dark:text-gray-400 mt-2"></p>
+<button type="button" id="remove-video" onclick="removeVideo()" class="hidden mt-2 text-xs text-red-400 hover:text-red-600 transition">✕ Remove video</button>
+</div>
+<p id="video-size-error" class="hidden text-red-500 text-xs mt-2 font-medium">⚠️ File too large. Max 10MB.</p>
+<p id="video-type-error" class="hidden text-red-500 text-xs mt-2 font-medium">⚠️ Invalid type. Use MP4, WebM, OGG, or MOV.</p>
+</div>
+</div>
+
+<div class="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
+<input type="checkbox" name="is_anonymous" id="is_anonymous" checked class="w-4 h-4 accent-rose-600 cursor-pointer">
+<label for="is_anonymous" class="text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none">Post Anonymously — hide my username</label>
+</div>
+
+{% if rate_limited %}
+<div class="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-xl p-4 text-center">
+<p class="text-red-600 dark:text-red-400 font-semibold">🛑 Rate limit reached — {{ post_count }}/{{ rate_limit }} posts this hour</p>
+</div>
+{% else %}
+<div class="mb-2 flex items-center gap-2">
+<div class="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-2">
+<div class="bg-rose-500 h-2 rounded-full transition-all" id="progress-bar"></div>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400 shrink-0">{{ post_count }}/{{ rate_limit }} posts this hour</span>
+</div>
+{% endif %}
+
+<button type="submit" id="submit-btn" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3 rounded-xl transition text-base">Whisper It 🫧</button>
+</form>
+</div>
+</div>
+
+<script>
+const postCount = Number("{{ post_count }}");
+const rateLimit = Number("{{ rate_limit }}");
+const progressBar = document.getElementById('progress-bar');
+if (progressBar) {
+progressBar.style.width = Math.min((postCount / rateLimit) * 100, 100) + '%';
+}
+
+function showTab(showId, hideId, btn) {
+document.getElementById(showId).classList.remove('hidden');
+document.getElementById(hideId).classList.add('hidden');
+if (showId === 'image-tab') {
+document.getElementById('image-tab-btn').className = 'flex-1 py-2 rounded-xl text-sm font-semibold border-2 border-rose-300 bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 transition';
+document.getElementById('video-tab-btn').className = 'flex-1 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 transition';
+removeVideo();
+} else {
+document.getElementById('video-tab-btn').className = 'flex-1 py-2 rounded-xl text-sm font-semibold border-2 border-rose-300 bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 transition';
+document.getElementById('image-tab-btn').className = 'flex-1 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 transition';
+removeImage();
+}
+}
+
+const MAX_IMAGE = 5 * 1024 * 1024;
+const MAX_VIDEO = 10 * 1024 * 1024;
+const ALLOWED_IMAGES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+const ALLOWED_VIDEOS = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+
+function handleImageSelect(event) {
+const file = event.target.files[0];
+document.getElementById('size-error').classList.add('hidden');
+document.getElementById('type-error').classList.add('hidden');
+if (!file) return;
+if (!ALLOWED_IMAGES.includes(file.type)) {
+document.getElementById('type-error').classList.remove('hidden');
+event.target.value = '';
+return;
+}
+if (file.size > MAX_IMAGE) {
+document.getElementById('size-error').classList.remove('hidden');
+event.target.value = '';
+return;
+}
+const reader = new FileReader();
+reader.onload = function(e) {
+const preview = document.getElementById('image-preview');
+preview.src = e.target.result;
+preview.classList.remove('hidden');
+}
+reader.readAsDataURL(file);
+const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+document.getElementById('image-file-name').textContent = `${file.name} (${sizeMB} MB)`;
+document.getElementById('image-file-name').classList.remove('hidden');
+document.getElementById('remove-image').classList.remove('hidden');
+}
+
+function handleVideoSelect(event) {
+const file = event.target.files[0];
+document.getElementById('video-size-error').classList.add('hidden');
+document.getElementById('video-type-error').classList.add('hidden');
+if (!file) return;
+if (!ALLOWED_VIDEOS.includes(file.type)) {
+document.getElementById('video-type-error').classList.remove('hidden');
+event.target.value = '';
+return;
+}
+if (file.size > MAX_VIDEO) {
+document.getElementById('video-size-error').classList.remove('hidden');
+event.target.value = '';
+return;
+}
+const preview = document.getElementById('video-preview');
+preview.src = URL.createObjectURL(file);
+preview.classList.remove('hidden');
+const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+document.getElementById('video-file-name').textContent = `${file.name} (${sizeMB} MB)`;
+document.getElementById('video-file-name').classList.remove('hidden');
+document.getElementById('remove-video').classList.remove('hidden');
+}
+
+function removeImage() {
+document.getElementById('image-upload').value = '';
+document.getElementById('image-preview').classList.add('hidden');
+document.getElementById('image-file-name').classList.add('hidden');
+document.getElementById('remove-image').classList.add('hidden');
+document.getElementById('size-error').classList.add('hidden');
+document.getElementById('type-error').classList.add('hidden');
+}
+
+function removeVideo() {
+document.getElementById('video-upload').value = '';
+document.getElementById('video-preview').classList.add('hidden');
+document.getElementById('video-file-name').classList.add('hidden');
+document.getElementById('remove-video').classList.add('hidden');
+document.getElementById('video-size-error').classList.add('hidden');
+document.getElementById('video-type-error').classList.add('hidden');
+}
+</script>
+
+{% endblock %}

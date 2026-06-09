@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="flex gap-6">
+
+<div class="flex-1 min-w-0">
+
+<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 mb-6 shadow-sm">
+<div class="flex items-center justify-between flex-wrap gap-3">
+<div>
+<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">b/{{ board.name }}</h2>
+{% if board.description %}
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ board.description }}</p>
+{% endif %}
+<p class="text-xs text-gray-400 dark:text-gray-500 mt-2">{{ board.member_count }} member{{ board.member_count|pluralize }} · {{ board.confession_count }} whisper{{ board.confession_count|pluralize }} · Created by {{ board.created_by.username }}</p>
+</div>
+{% if user.is_authenticated %}
+<a href="/boards/join/{{ board.name }}/" class="{% if is_member %}bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-red-50 hover:text-red-500{% else %}bg-rose-600 hover:bg-rose-700 text-white{% endif %} text-sm font-semibold px-5 py-2 rounded-xl transition">{% if is_member %}✓ Joined{% else %}+ Join{% endif %}</a>
+{% endif %}
+</div>
+</div>
+
+<div class="flex gap-2 mb-6">
+<a href="/b/{{ board.name }}/?sort=hot" class="px-4 py-1.5 rounded-full text-sm font-semibold transition {% if sort == 'hot' %}bg-orange-500 text-white{% else %}bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300{% endif %}">🔥 Hot</a>
+<a href="/b/{{ board.name }}/?sort=new" class="px-4 py-1.5 rounded-full text-sm font-semibold transition {% if sort == 'new' %}bg-rose-600 text-white{% else %}bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300{% endif %}">✨ New</a>
+<a href="/b/{{ board.name }}/?sort=top" class="px-4 py-1.5 rounded-full text-sm font-semibold transition {% if sort == 'top' %}bg-green-600 text-white{% else %}bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300{% endif %}">⬆️ Top</a>
+</div>
+
+{% for confession in confessions %}
+<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 mb-4 shadow-sm hover:shadow-md transition">
+<a href="/confession/{{ confession.id }}/" class="block text-gray-800 dark:text-gray-100 text-base leading-relaxed mb-3 hover:text-rose-600 dark:hover:text-rose-400 transition">{{ confession.message }}</a>
+{% if confession.image %}
+<a href="/confession/{{ confession.id }}/">
+<img src="{{ confession.image.url }}" alt="confession image" class="w-full max-h-64 object-cover rounded-xl mb-3 border border-gray-100 dark:border-gray-800">
+</a>
+{% endif %}
+<div class="flex items-center justify-between flex-wrap gap-2">
+<div class="flex items-center gap-2">
+{% if user.is_authenticated %}
+<a href="/vote/{{ confession.id }}/1/" class="flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-semibold border transition {% if confession.user_vote == 1 %}bg-green-50 dark:bg-green-950 border-green-400 text-green-600{% else %}border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-green-300 hover:text-green-600{% endif %}">👍 {{ confession.upvote_count }}</a>
+<a href="/vote/{{ confession.id }}/-1/" class="flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-semibold border transition {% if confession.user_vote == -1 %}bg-red-50 dark:bg-red-950 border-red-400 text-red-500{% else %}border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-red-300 hover:text-red-500{% endif %}">👎 {{ confession.downvote_count }}</a>
+{% else %}
+<span class="flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-semibold border border-gray-200 dark:border-gray-700 text-gray-400">👍 {{ confession.upvote_count }}</span>
+<span class="flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-semibold border border-gray-200 dark:border-gray-700 text-gray-400">👎 {{ confession.downvote_count }}</span>
+{% endif %}
+<span class="text-xs text-gray-400 dark:text-gray-500 ml-1">{{ confession.vote_score }} CP</span>
+<a href="/confession/{{ confession.id }}/" class="flex items-center gap-1 px-2 py-1 rounded-lg text-xs border border-gray-200 dark:border-gray-700 text-gray-400 hover:border-rose-300 hover:text-rose-500 transition">💬 {{ confession.comments.count }}</a>
+</div>
+<div class="flex items-center gap-2 flex-wrap">
+{% if confession.is_anonymous %}
+<span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full text-xs font-medium">🫧 Anonymous</span>
+{% else %}
+<a href="/profile/{{ confession.author.username }}/" class="bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-300 px-2 py-0.5 rounded-full text-xs font-medium hover:bg-rose-100 transition">👤 {{ confession.author.username }}</a>
+{% endif %}
+<span class="bg-yellow-50 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 px-2 py-0.5 rounded-full text-xs font-medium">{{ confession.get_mood_display }}</span>
+<span class="text-gray-400 dark:text-gray-500 text-xs">{{ confession.posted_at|date:'M d, Y' }}</span>
+{% if user == confession.author %}
+<form method="post" action="/delete/{{ confession.id }}/" style="display:inline">
+{% csrf_token %}
+<button type="submit" class="text-xs text-red-400 hover:text-red-600 px-2 py-0.5 rounded-lg transition">🗑️</button>
+</form>
+{% endif %}
+</div>
+</div>
+</div>
+{% empty %}
+<div class="text-center py-16 text-gray-400 dark:text-gray-600">
+<p class="text-4xl mb-3">🫧</p>
+<p class="text-lg font-medium">No whispers in this board yet</p>
+{% if user.is_authenticated %}
+<a href="/post/" class="mt-3 inline-block bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-5 py-2 rounded-xl transition">+ Whisper Here</a>
+{% endif %}
+</div>
+{% endfor %}
+
+</div>
+</div>
+{% endblock %}

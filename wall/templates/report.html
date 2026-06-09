@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="max-w-lg mx-auto">
+<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-sm">
+
+<div class="mb-6">
+<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Report Whisper 🚩</h2>
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Help us keep Whispr safe</p>
+</div>
+
+<div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
+<p class="text-gray-700 dark:text-gray-300 text-sm italic">"{{ confession.message|truncatechars:120 }}"</p>
+</div>
+
+{% if already_reported %}
+<div class="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-xl p-4 text-center">
+<p class="text-yellow-700 dark:text-yellow-300 font-semibold">✅ You already reported this whisper</p>
+<p class="text-yellow-600 dark:text-yellow-400 text-sm mt-1">Our team will review it soon</p>
+</div>
+<div class="mt-4 text-center">
+<a href="/" class="text-rose-600 dark:text-rose-400 text-sm hover:underline">← Back to wall</a>
+</div>
+{% else %}
+<form method="post" class="space-y-3">
+{% csrf_token %}
+<p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Why are you reporting this?</p>
+{% for value, label in reason_choices %}
+<label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-rose-300 dark:hover:border-rose-600 cursor-pointer transition bg-gray-50 dark:bg-gray-800">
+<input type="radio" name="reason" value="{{ value }}" class="accent-rose-600" required>
+<span class="text-gray-700 dark:text-gray-300 text-sm">{{ label }}</span>
+</label>
+{% endfor %}
+<button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition mt-2">Submit Report</button>
+</form>
+<div class="mt-4 text-center">
+<a href="/" class="text-gray-500 dark:text-gray-400 text-sm hover:underline">← Cancel, go back</a>
+</div>
+{% endif %}
+
+</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block search_query %}{{ query }}{% endblock %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+
+<div class="mb-6">
+<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Search Results 🔍</h2>
+{% if query %}
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ results|length }} result{{ results|length|pluralize }} for "<span class="font-semibold text-rose-600 dark:text-rose-400">{{ query }}</span>"</p>
+{% else %}
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Enter a search term above</p>
+{% endif %}
+</div>
+
+{% for confession in results %}
+<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 mb-4 shadow-sm hover:shadow-md transition">
+
+{% if confession.board %}
+<a href="/b/{{ confession.board.name }}/" class="inline-block bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 text-xs font-bold px-2 py-0.5 rounded-full mb-2 hover:bg-rose-100 transition">b/{{ confession.board.name }}</a>
+{% endif %}
+
+<a href="/confession/{{ confession.id }}/" class="block text-gray-800 dark:text-gray-100 text-base leading-relaxed mb-3 hover:text-rose-600 dark:hover:text-rose-400 transition">{{ confession.message }}</a>
+
+<div class="flex items-center gap-2 flex-wrap text-xs text-gray-400 dark:text-gray-500">
+{% if confession.is_anonymous %}
+<span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full font-medium">🫧 Anonymous</span>
+{% else %}
+<a href="/profile/{{ confession.author.username }}/" class="bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-300 px-2 py-0.5 rounded-full font-medium hover:bg-rose-100 transition">👤 {{ confession.author.username }}</a>
+{% endif %}
+<span class="bg-yellow-50 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 px-2 py-0.5 rounded-full font-medium">{{ confession.get_mood_display }}</span>
+<span>{{ confession.posted_at|date:'M d, Y' }}</span>
+<span>👍 {{ confession.upvote_count }}</span>
+<span>💬 {{ confession.comments.count }}</span>
+</div>
+</div>
+{% empty %}
+{% if query %}
+<div class="text-center py-16 text-gray-400 dark:text-gray-600">
+<p class="text-4xl mb-3">🔍</p>
+<p class="text-lg font-medium">No results found</p>
+<p class="text-sm">Try a different search term</p>
+</div>
+{% endif %}
+{% endfor %}
+
+</div>
+{% endblock %}

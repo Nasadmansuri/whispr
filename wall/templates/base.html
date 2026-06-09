@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whispr 🫧</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: 'class' }</script>
+<script>
+if (localStorage.getItem('theme') === 'dark') {
+document.getElementById('html-root').classList.add('dark');
+}
+</script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
+
+<nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm sticky top-0 z-50">
+<div class="max-w-5xl mx-auto px-4 py-3">
+
+<div class="flex items-center gap-3">
+<a href="/" class="flex items-center gap-2 group shrink-0">
+<span class="text-2xl">🫧</span>
+<div class="hidden sm:block">
+<span class="font-extrabold text-lg text-rose-600 dark:text-rose-400 group-hover:text-rose-800 transition leading-none">Whispr</span>
+<p class="text-xs text-gray-400 leading-none">say it. anonymously.</p>
+</div>
+<span class="sm:hidden font-extrabold text-base text-rose-600 dark:text-rose-400">Whispr</span>
+</a>
+
+<form action="/search/" method="get" class="flex-1">
+<div class="relative">
+<input type="text" name="q" placeholder="Search whispers..." value="{% block search_query %}{% endblock %}" class="w-full px-4 py-2 pr-10 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-500 transition text-sm">
+<button type="submit" class="absolute right-3 top-2 text-gray-400 hover:text-rose-600 transition">🔍</button>
+</div>
+</form>
+
+<div class="flex items-center gap-2 shrink-0">
+<button onclick="toggleTheme()" id="theme-btn" class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition text-base">🌙</button>
+{% if user.is_authenticated %}
+<a href="/post/" class="bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition hidden sm:block">+ Whisper</a>
+<a href="/post/" class="bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-2 py-1.5 rounded-lg transition sm:hidden">+</a>
+<a href="/profile/{{ user.username }}/" class="w-7 h-7 rounded-full bg-rose-100 dark:bg-rose-900 text-rose-600 dark:text-rose-300 flex items-center justify-center font-bold text-xs hover:ring-2 hover:ring-rose-400 transition">{{ user.username|slice:":1"|upper }}</a>
+<form method="post" action="/accounts/logout/" style="display:inline">
+{% csrf_token %}
+<button type="submit" class="text-gray-500 dark:text-gray-400 hover:text-rose-500 transition text-sm bg-transparent border-none cursor-pointer p-0 hidden sm:inline">Logout</button>
+</form>
+{% else %}
+<a href="/accounts/login/" class="text-sm text-gray-600 dark:text-gray-300 hover:text-rose-600 font-medium transition hidden sm:block">Login</a>
+<a href="/register/" class="bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition">Register</a>
+{% endif %}
+</div>
+</div>
+
+</div>
+</nav>
+
+<main class="max-w-5xl mx-auto px-4 py-6">
+{% block content %}{% endblock %}
+</main>
+
+{% if user.is_authenticated %}
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 sm:hidden z-50">
+<div class="flex items-center justify-around py-2">
+<a href="/" class="flex flex-col items-center gap-0.5 text-gray-500 dark:text-gray-400 hover:text-rose-600 transition">
+<span class="text-xl">🏠</span>
+<span class="text-xs">Home</span>
+</a>
+<a href="/trending/" class="flex flex-col items-center gap-0.5 text-gray-500 dark:text-gray-400 hover:text-rose-600 transition">
+<span class="text-xl">📈</span>
+<span class="text-xs">Trending</span>
+</a>
+<a href="/post/" class="flex flex-col items-center gap-0.5 bg-rose-600 text-white px-4 py-1.5 rounded-xl hover:bg-rose-700 transition">
+<span class="text-xl">🫧</span>
+<span class="text-xs font-semibold">Whisper</span>
+</a>
+<a href="/search/" class="flex flex-col items-center gap-0.5 text-gray-500 dark:text-gray-400 hover:text-rose-600 transition">
+<span class="text-xl">🔍</span>
+<span class="text-xs">Search</span>
+</a>
+<a href="/profile/{{ user.username }}/" class="flex flex-col items-center gap-0.5 text-gray-500 dark:text-gray-400 hover:text-rose-600 transition">
+<span class="text-xl">👤</span>
+<span class="text-xs">Profile</span>
+</a>
+</div>
+</nav>
+<div class="h-16 sm:hidden"></div>
+{% endif %}
+
+<script>
+function toggleTheme() {
+const html = document.getElementById('html-root');
+const btn = document.getElementById('theme-btn');
+if (html.classList.contains('dark')) {
+html.classList.remove('dark');
+localStorage.setItem('theme', 'light');
+btn.textContent = '🌙';
+} else {
+html.classList.add('dark');
+localStorage.setItem('theme', 'dark');
+btn.textContent = '☀️';
+}
+}
+const saved = localStorage.getItem('theme');
+document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀️' : '🌙';
+</script>
+
+</body>
+</html>
