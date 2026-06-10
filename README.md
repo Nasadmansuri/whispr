@@ -14,40 +14,74 @@ Whispr is an anonymous social confession platform where you can speak your mind 
 
 ## ✨ Features
 
-- 🫧 **Anonymous Posting** — share confessions without revealing your identity
-- 🗳️ **Voting System** — upvote/downvote with Confess Points (CP) rewards
-- 💬 **Comments & Replies** — nested comments with anonymous option
-- 🏘️ **Community Boards** — create and join topic-based boards
-- 📈 **Trending Algorithm** — discover hot whispers from the last 48 hours
-- 🔥 **Sort Options** — Hot, New, Top, Trending
-- 🖼️ **Media Uploads** — attach images and videos to your whispers
-- 👤 **User Profiles** — track your CP, badges, followers
-- 🔐 **Email Verification** — verified badge for trusted accounts
-- 🛡️ **Report & Ban System** — community moderation tools
-- 🌙 **Dark / Light Mode** — full theme support
-- 📱 **Mobile Friendly** — responsive design with bottom navigation
+### 🔐 User System
+- Register, login, logout
+- Email verification with verified badge
+- Password reset via email
+- Follow / unfollow users
+
+### 🫧 Whispers
+- Post confessions anonymously or publicly
+- Attach images or videos
+- Mood tags — Happy, Sad, Angry
+- Post to specific boards or general wall
+
+### 🗳️ Voting & Ranking
+- Upvote / downvote system
+- Confess Points (CP) earned from upvotes
+- Sort by Hot, New, Top, Trending
+- Trending algorithm based on last 48 hours
+
+### 💬 Comments
+- Nested comments with replies
+- Anonymous commenting option
+- Delete your own comments
+
+### 🏘️ Boards
+- Create community boards (b/college, b/work, etc.)
+- Join / leave boards
+- Board-specific feed with sort options
+
+### 🛡️ Moderation
+- Report system with multiple categories
+- Admin ban / unban system
+- Rate limiting on posts
+
+### 👤 Profiles
+- Avatar upload
+- Public whispers on profile
+- CP badges — Newcomer, Rising Star, Top Whisperer
+- Follower / following counts
+
+### 📱 Mobile
+- Fully responsive design
+- Mobile bottom navigation bar
+- Dark / light mode toggle
 
 ---
 
-## 🛠️ Built With
+## 🛠️ Tech Stack
 
-- **Backend** — Django 6.0.5, Python 3.13
-- **Frontend** — Tailwind CSS
-- **Database** — SQLite
-- **Media** — Cloudinary
-- **Email** — Gmail SMTP
-- **Hosting** — PythonAnywhere
+| Layer | Technology |
+|---|---|
+| Backend | Django 6.0.5 |
+| Language | Python 3.13 |
+| Database | SQLite |
+| Media Storage | Cloudinary |
+| Frontend | Tailwind CSS |
+| Email | Gmail SMTP |
+| Deployment | PythonAnywhere |
 
 ---
 
 ## 🚧 Roadmap
 
 - [ ] Emoji reactions on whispers
-- [ ] Bookmark/save whispers
+- [ ] Bookmark / save whispers
 - [ ] User bio on profiles
 - [ ] Migrate to Railway for full media support
 - [ ] Push notifications
-- [ ] Mobile app (React Native)
+- [ ] Mobile app
 
 ---
 
@@ -55,6 +89,7 @@ Whispr is an anonymous social confession platform where you can speak your mind 
 
 **Nasad Mansuri**
 GitHub: [@Nasadmansuri](https://github.com/Nasadmansuri)
+Live: [whisprapp.pythonanywhere.com](https://whisprapp.pythonanywhere.com)
 
 ---
 
