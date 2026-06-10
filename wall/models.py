@@ -74,6 +74,17 @@ class Confession(models.Model):
         v = self.votes.filter(user=user).first()
         return v.value if v else 0
 
+    def reaction_summary(self, user=None):
+        emojis = ['❤️', '😂', '😮', '😢', '😡']
+        summary = []
+        for emoji in emojis:
+            count = self.reactions.filter(emoji=emoji).count()
+            user_reacted = False
+            if user and user.is_authenticated:
+                user_reacted = self.reactions.filter(emoji=emoji, user=user).exists()
+            summary.append({'emoji': emoji, 'count': count, 'user_reacted': user_reacted})
+        return summary
+
 
 class Vote(models.Model):
     confession = models.ForeignKey(Confession, on_delete=models.CASCADE, related_name='votes')
@@ -122,6 +133,24 @@ class Comment(models.Model):
 
     def top_level_replies(self):
         return self.replies.order_by('posted_at')
+
+class Reaction(models.Model):
+    EMOJI_CHOICES = [
+        ('❤️', '❤️ Love'),
+        ('😂', '😂 Haha'),
+        ('😮', '😮 Wow'),
+        ('😢', '😢 Sad'),
+        ('😡', '😡 Angry'),
+    ]
+    confession = models.ForeignKey(Confession, on_delete=models.CASCADE, related_name='reactions')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reactions')
+    emoji = models.CharField(max_length=10, choices=EMOJI_CHOICES)
+
+    class Meta:
+        unique_together = ('confession', 'user', 'emoji')
+
+    def __str__(self):
+        return f"{self.user.username} reacted {self.emoji} on #{self.confession.id}"
 
 
 def get_karma(user):

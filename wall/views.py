@@ -10,9 +10,10 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.conf import settings
 from datetime import timedelta
-from .models import Confession, Vote, Report, Comment, UserProfile, Board, get_karma
+from .models import Confession, Vote, Report, Comment, UserProfile, Board, Reaction, get_karma
 from .forms import ConfessionForm, BoardForm
 from django.core.paginator import Paginator
+
 
 def is_user_banned(user):
     try:
@@ -32,8 +33,6 @@ def get_post_count_last_hour(user):
     one_hour_ago = timezone.now() - timedelta(hours=1)
     return Confession.objects.filter(author=user, posted_at__gte=one_hour_ago).count()
 
-
-from django.core.paginator import Paginator
 
 def home(request):
     sort = request.GET.get('sort', 'new')
@@ -63,6 +62,7 @@ def home(request):
         'page_obj': page_obj,
     })
 
+
 def trending(request):
     cutoff = timezone.now() - timedelta(hours=48)
     recent_confessions = Confession.objects.filter(posted_at__gte=cutoff)
@@ -73,6 +73,7 @@ def trending(request):
     scored.sort(key=lambda x: x[0], reverse=True)
     confessions = [c for score, c in scored[:10]]
     return render(request, 'trending.html', {'confessions': confessions})
+
 
 def search(request):
     query = request.GET.get('q', '').strip()
@@ -85,6 +86,7 @@ def search(request):
         'query': query,
         'results': results,
     })
+
 
 def board_detail(request, board_name):
     board = get_object_or_404(Board, name=board_name)
@@ -222,10 +224,9 @@ def register(request):
                 uid_str = uid if isinstance(uid, str) else uid.decode()
                 token_str = token_encoded if isinstance(token_encoded, str) else token_encoded.decode()
                 token_str = token_str.rstrip('=')
-                verify_url = f"http://127.0.0.1:8000/verify-email/{uid_str}/{token_str}/"
-                print(f"\n\nVERIFY URL: {verify_url}\n\n")
+                verify_url = f"https://whisprapp.pythonanywhere.com/verify-email/{uid_str}/{token_str}/"
                 send_mail(
-                    subject='Verify your ChupChapBaas email',
+                    subject='Verify your Whispr email',
                     message=f'Verify link: {verify_url}',
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[email],
@@ -369,3 +370,20 @@ def delete_comment(request, comment_id):
     if comment.author == request.user:
         comment.delete()
     return redirect('confession_detail', confession_id=confession_id)
+
+
+@login_required
+def react(request, confession_id, emoji):
+    if is_user_banned(request.user):
+        profile = UserProfile.objects.get(user=request.user)
+        return render(request, 'banned.html', {'ban_reason': profile.ban_reason})
+    confession = get_object_or_404(Confession, id=confession_id)
+    allowed = ['❤️', '😂', '😮', '😢', '😡']
+    if emoji not in allowed:
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+    existing = Reaction.objects.filter(confession=confession, user=request.user, emoji=emoji).first()
+    if existing:
+        existing.delete()
+    else:
+        Reaction.objects.create(confession=confession, user=request.user, emoji=emoji)
+    return redirect(request.META.get('HTTP_REFERER', '/'))

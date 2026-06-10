@@ -16,6 +16,22 @@
 </video>
 {% endif %}
 
+{% if user.is_authenticated %}
+<div class="flex items-center gap-1 flex-wrap mb-4">
+{% for reaction in confession.reaction_summary %}
+<a href="/react/{{ confession.id }}/{{ reaction.emoji }}/" class="flex items-center gap-1 px-2 py-1 rounded-lg text-xs border transition {% if reaction.user_reacted %}bg-rose-50 dark:bg-rose-950 border-rose-300 text-rose-600 font-semibold{% else %}border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-rose-300 hover:text-rose-500{% endif %}">{{ reaction.emoji }} {% if reaction.count > 0 %}<span>{{ reaction.count }}</span>{% endif %}</a>
+{% endfor %}
+</div>
+{% else %}
+<div class="flex items-center gap-1 flex-wrap mb-4">
+{% for reaction in confession.reaction_summary %}
+{% if reaction.count > 0 %}
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">{{ reaction.emoji }} {{ reaction.count }}</span>
+{% endif %}
+{% endfor %}
+</div>
+{% endif %}
+
 <div class="flex items-center gap-2 flex-wrap">
 {% if confession.is_anonymous %}
 <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full text-xs font-medium">🫧 Anonymous</span>

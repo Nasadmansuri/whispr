@@ -7,6 +7,7 @@ urlpatterns = [
     path('post/', views.post_confession, name='post'),
     path('delete/<int:confession_id>/', views.delete_confession, name='delete'),
     path('vote/<int:confession_id>/<int:value>/', views.vote, name='vote'),
+    path('react/<int:confession_id>/<str:emoji>/', views.react, name='react'),
     path('report/<int:confession_id>/', views.report, name='report'),
     path('confession/<int:confession_id>/', views.confession_detail, name='confession_detail'),
     path('confession/<int:confession_id>/comment/', views.add_comment, name='add_comment'),
